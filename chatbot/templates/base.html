@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SENAI AI Chatbot</title>
+    <style>
+        /* Reset de Estilos Gerais */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+        
+        /* Corpo */
+        body {
+            background: linear-gradient(135deg, #000 0%, #1a1a2e 50%, #16213e 100%);
+            color: #fff;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Particles background */
+        #particles-js {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            z-index: -1;
+        }
+        
+        /* Cabeçalho */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            position: relative;
+            z-index: 10;
+        }
+        
+        .logo {
+            height: 50px;
+            width: auto;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+
+        .logo:hover {
+            transform: scale(1.05);
+        }
+        
+        .nav-buttons {
+            display: flex;
+            gap: 15px;
+        }
+        
+        .btn-entrar {
+            background-color: transparent;
+            color: #fff;
+            border: 2px solid #fff;
+            border-radius: 25px;
+            padding: 12px 30px;
+            cursor: pointer;
+            font-weight: bold;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .btn-entrar:hover {
+            background-color: #fff;
+            color: #000;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(255, 255, 255, 0.3);
+        }
+
+        .btn-criar-conta {
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            color: #fff;
+            border: none;
+            border-radius: 25px;
+            padding: 12px 30px;
+            cursor: pointer;
+            font-weight: bold;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 0 4px 15px rgba(106, 17, 203, 0.3);
+        }
+
+        .btn-criar-conta:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(106, 17, 203, 0.4);
+        }
+        
+        /* Principal */
+        main {
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            overflow: hidden;
+        }
+
+        .senai-hero {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+            max-width: 800px;
+            text-align: center;
+        }
+
+        .senai-logo-container {
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .senai-logo-main {
+            width: 260px;
+            height: auto;
+            max-width: 80vw;
+            filter: drop-shadow(0 10px 30px rgba(0, 0, 0, 0.5));
+            transition: transform 0.3s ease;
+        }
+        
+        body {
+            overflow: hidden;
+        }
+
+        .senai-logo-main:hover {
+            transform: scale(1.02);
+        }
+        
+        .tagline {
+            font-size: 20px;
+            font-weight: bold;
+            text-align: center;
+            letter-spacing: 2px;
+            margin-bottom: 35px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.7);
+            line-height: 1.4;
+            text-transform: uppercase;
+        }
+        
+        .cta-button {
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            color: #fff;
+            border: none;
+            border-radius: 30px;
+            padding: 20px 50px;
+            cursor: pointer;
+            font-weight: bold;
+            margin-bottom: 30px;
+            font-size: 18px;
+            transition: all 0.3s ease;
+            box-shadow: 0 6px 25px rgba(106, 17, 203, 0.4);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .cta-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 30px rgba(106, 17, 203, 0.6);
+        }
+        
+        .stay-disconnected {
+            margin-top: 20px;
+        }
+
+        .stay-disconnected a {
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: underline;
+            cursor: pointer;
+            font-size: 16px;
+            transition: color 0.3s ease;
+        }
+
+        .stay-disconnected a:hover {
+            color: #fff;
+        }
+        
+        /* Rodapé */
+        footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 30px;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .social-icons {
+            display: flex;
+            gap: 20px;
+        }
+        
+        .social-icon {
+            width: 45px;
+            height: 45px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            color: #fff;
+            text-decoration: none;
+            font-size: 20px;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .social-icon:hover {
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(106, 17, 203, 0.4);
+        }
+        
+        .senai-brand {
+            height: 40px;
+            width: auto;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+
+        .senai-brand:hover {
+            transform: scale(1.05);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .senai-logo-main {
+                width: 300px;
+            }
+            
+            .tagline {
+                font-size: 18px;
+                letter-spacing: 1px;
+            }
+            
+            .nav-buttons {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .btn-entrar,
+            .btn-criar-conta {
+                padding: 10px 20px;
+                font-size: 12px;
+            }
+
+            .cta-button {
+                padding: 15px 35px;
+                font-size: 16px;
+            }
+
+            main {
+                padding: 20px 15px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .senai-logo-main {
+                width: 250px;
+            }
+
+            .tagline {
+                font-size: 16px;
+            }
+
+            .cta-button {
+                padding: 12px 25px;
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="particles-js"></div>
+    
+    <header>
+        <img src="{{ url_for('static', filename='images/logoMenor_branca.png') }}" alt="SENAI AI" class="logo" onclick="window.location.href='{{ url_for('home') }}'">
+        
+        <div class="nav-buttons">
+            <a href="{{ url_for('login') }}" class="btn-entrar">ENTRAR</a>
+            <a href="{{ url_for('criar_conta') }}" class="btn-criar-conta">CRIAR CONTA</a>
+        </div>
+    </header>
+    
+    <main>
+        <div class="senai-hero">
+            <div class="senai-logo-container">
+                <img src="{{ url_for('static', filename='images/logoPrincipal_branca-removebg-preview (1).png') }}" alt="SENAI" class="senai-logo-main">
+            </div>
+            <p class="tagline">A SENAI TRANSFORMA POSSIBILIDADES EM REALIDADE.</p>
+            <button class="cta-button" onclick="window.location.href='{{ url_for('chat') }}'">CLIQUE AQUI</button>
+            <p class="stay-disconnected">
+                <a href="{{ url_for('chat') }}">Permanecer desconectado</a>
+            </p>
+        </div>
+    </main>
+    
+
+    <script>
+        // Simple particle effect
+        function createParticles() {
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            const particles = [];
+            
+            canvas.style.position = 'fixed';
+            canvas.style.top = '0';
+            canvas.style.left = '0';
+            canvas.style.width = '100%';
+            canvas.style.height = '100%';
+            canvas.style.zIndex = '-1';
+            canvas.style.pointerEvents = 'none';
+            
+            document.getElementById('particles-js').appendChild(canvas);
+            
+            function resize() {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+            }
+            
+            function createParticle() {
+                return {
+                    x: Math.random() * canvas.width,
+                    y: Math.random() * canvas.height,
+                    size: Math.random() * 2 + 0.5,
+                    speedX: (Math.random() - 0.5) * 1,
+                    speedY: (Math.random() - 0.5) * 1,
+                    opacity: Math.random() * 0.3 + 0.1
+                };
+            }
+            
+            function animate() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                
+                particles.forEach((particle, index) => {
+                    particle.x += particle.speedX;
+                    particle.y += particle.speedY;
+                    
+                    if (particle.x < 0 || particle.x > canvas.width) particle.speedX *= -1;
+                    if (particle.y < 0 || particle.y > canvas.height) particle.speedY *= -1;
+                    
+                    ctx.beginPath();
+                    ctx.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
+                    ctx.fillStyle = `rgba(255, 255, 255, ${particle.opacity})`;
+                    ctx.fill();
+                });
+                
+                requestAnimationFrame(animate);
+            }
+            
+            resize();
+            window.addEventListener('resize', resize);
+            
+            for (let i = 0; i < 80; i++) {
+                particles.push(createParticle());
+            }
+            
+            animate();
+        }
+
+        // Initialize particles when page loads
+        document.addEventListener('DOMContentLoaded', createParticles);
+
+        // Add loading animation
+        window.addEventListener('load', function() {
+            document.body.style.opacity = '0';
+            document.body.style.transition = 'opacity 0.5s ease-in-out';
+            setTimeout(() => {
+                document.body.style.opacity = '1';
+            }, 100);
+        });
+
+        console.log('🚀 SENAI Landing Page carregada com sucesso!');
+    </script>
+</body>
+</html>

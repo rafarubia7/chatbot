@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SENAI AI Chatbot - Criar Conta</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+        body {
+            background: linear-gradient(135deg, #000 0%, #1a1a2e 50%, #16213e 100%);
+            color: #fff;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        #particles-js {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            z-index: -1;
+        }
+        header {
+            position: absolute;
+            top: 0;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 40px;
+            z-index: 10;
+        }
+        .logo {
+            height: 60px;
+            cursor: pointer;
+        }
+        .btn-voltar {
+            background: transparent;
+            color: #fff;
+            border: 2px solid #fff;
+            padding: 12px 30px;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+        .btn-voltar:hover {
+            background: #fff;
+            color: #000;
+        }
+        .form-container {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(15px);
+            border-radius: 20px;
+            padding: 60px 40px;
+            width: 90%;
+            max-width: 600px;
+            margin-top: 80px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+        }
+        .form-container h2 {
+            text-align: center;
+            margin-bottom: 40px;
+            font-size: 28px;
+        }
+        .form-group {
+            margin-bottom: 25px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+        .form-group input {
+            width: 100%;
+            padding: 15px;
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            font-size: 15px;
+        }
+        .form-group input::placeholder {
+            color: rgba(255, 255, 255, 0.6);
+        }
+        .form-button {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 10px;
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            color: #fff;
+            font-weight: bold;
+            font-size: 16px;
+            cursor: pointer;
+            margin-bottom: 20px;
+            transition: 0.3s;
+        }
+        .form-button:hover {
+            opacity: 0.9;
+        }
+        .form-links,
+        .terms {
+            text-align: center;
+            font-size: 13px;
+        }
+        .form-links a,
+        .terms a {
+            color: #6a11cb;
+            text-decoration: none;
+        }
+        @media (max-height: 600px) {
+            body {
+                justify-content: flex-start;
+                padding-top: 100px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="particles-js"></div>
+    <header>
+        <img src="{{ url_for('static', filename='images/logo_principal.png') }}" alt="SENAI AI" class="logo" onclick="window.location.href='{{ url_for('login') }}'">
+        <a href="{{ url_for('login') }}" class="btn-voltar">← VOLTAR</a>
+    </header>
+
+    <div class="form-container">
+        <h2>Criar Conta</h2>
+        <form id="registerForm">
+            <div class="form-group">
+                <label for="name">Nome Completo</label>
+                <input type="text" id="name" name="name" placeholder="Digite seu nome completo" required>
+            </div>
+            <div class="form-group">
+                <label for="email">E-mail</label>
+                <input type="email" id="email" name="email" placeholder="Digite seu e-mail" required>
+            </div>
+            <div class="form-group">
+                <label for="password">Senha</label>
+                <input type="password" id="password" name="password" placeholder="Digite sua senha" required>
+            </div>
+            <div class="form-group">
+                <label for="confirmPassword">Confirmar Senha</label>
+                <input type="password" id="confirmPassword" name="confirmPassword" placeholder="Confirme sua senha" required>
+            </div>
+            <button type="submit" class="form-button">CRIAR CONTA</button>
+            <div class="form-links">
+                <a href="{{ url_for('login') }}">Já tem uma conta? Entrar agora</a>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        // Partículas de fundo
+        function createParticles() {
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            const particles = [];
+            canvas.style.position = 'fixed';
+            canvas.style.top = 0;
+            canvas.style.left = 0;
+            canvas.style.width = '100%';
+            canvas.style.height = '100%';
+            canvas.style.zIndex = '-1';
+            document.getElementById('particles-js').appendChild(canvas);
+            function resize() {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+            }
+            function createParticle() {
+                return {
+                    x: Math.random() * canvas.width,
+                    y: Math.random() * canvas.height,
+                    size: Math.random() * 2 + 0.5,
+                    speedX: (Math.random() - 0.5),
+                    speedY: (Math.random() - 0.5),
+                    opacity: Math.random() * 0.3 + 0.1
+                };
+            }
+            function animate() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                particles.forEach(p => {
+                    p.x += p.speedX;
+                    p.y += p.speedY;
+                    if (p.x < 0 || p.x > canvas.width) p.speedX *= -1;
+                    if (p.y < 0 || p.y > canvas.height) p.speedY *= -1;
+                    ctx.beginPath();
+                    ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+                    ctx.fillStyle = `rgba(255,255,255,${p.opacity})`;
+                    ctx.fill();
+                });
+                requestAnimationFrame(animate);
+            }
+            resize();
+            window.addEventListener('resize', resize);
+            for (let i = 0; i < 80; i++) particles.push(createParticle());
+            animate();
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            createParticles();
+            const form = document.getElementById('registerForm');
+            form.addEventListener('submit', function (e) {
+                e.preventDefault();
+                const password = document.getElementById('password').value;
+                const confirm = document.getElementById('confirmPassword').value;
+                if (password !== confirm) {
+                    alert('As senhas não coincidem.');
+                    return;
+                }
+                alert('Conta criada com sucesso!');
+                form.reset();
+            });
+        });
+    </script>
+</body>
+</html>

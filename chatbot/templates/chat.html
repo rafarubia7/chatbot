@@ -1,0 +1,970 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SENAI AI - Chatbot</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #000 0%, #1a1a2e 50%, #16213e 100%);
+            color: #fff;
+            height: 100vh;
+            display: flex;
+            overflow: hidden;
+        }
+        
+        #particles-js {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            z-index: -1;
+        }
+        
+        .sidebar {
+            width: 300px;
+            background: rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(15px);
+            border-right: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            position: relative;
+        }
+        
+        .sidebar-header {
+            padding: 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .logo {
+            font-size: 20px;
+            font-weight: bold;
+            color: #fff;
+        }
+        
+        .new-chat-btn {
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            border: none;
+            color: #fff;
+            padding: 10px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+        
+        .new-chat-btn:hover {
+            opacity: 0.9;
+            transform: translateY(-1px);
+        }
+        
+        .sidebar-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px 10px;
+        }
+        
+        .sidebar-content::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        .sidebar-content::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 3px;
+        }
+        
+        .sidebar-content::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 3px;
+        }
+        
+        .chat-item {
+            background: rgba(106, 17, 203, 0.8);
+            backdrop-filter: blur(10px);
+            margin-bottom: 15px;
+            padding: 15px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .chat-item:hover {
+            background: rgba(106, 17, 203, 0.9);
+            transform: translateX(5px);
+            box-shadow: 0 5px 20px rgba(106, 17, 203, 0.3);
+        }
+        
+        .chat-item.active {
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            box-shadow: 0 5px 20px rgba(106, 17, 203, 0.4);
+        }
+        
+        .chat-item::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 3px;
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            opacity: 0;
+            transition: 0.3s;
+        }
+        
+        .chat-item:hover::before {
+            opacity: 1;
+        }
+        
+        .chat-title {
+            font-weight: bold;
+            font-size: 14px;
+            margin-bottom: 5px;
+            color: #fff;
+        }
+        
+        .chat-preview {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.7);
+            line-height: 1.4;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .chat-time {
+            font-size: 11px;
+            color: rgba(255, 255, 255, 0.5);
+            margin-top: 8px;
+        }
+        
+        .sidebar-footer {
+            padding: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        
+        .user-info:hover {
+            background: rgba(255, 255, 255, 0.15);
+        }
+        
+        .user-avatar {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 14px;
+        }
+        
+        .user-details h4 {
+            font-size: 14px;
+            margin-bottom: 2px;
+        }
+        
+        .user-details span {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.7);
+        }
+        
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+        
+        .main-header {
+            padding: 20px 40px;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .chat-title-main {
+            font-size: 18px;
+            font-weight: bold;
+        }
+        
+        .header-actions {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+        
+        .btn-sair {
+            background: transparent;
+            color: #fff;
+            border: 2px solid #fff;
+            padding: 10px 25px;
+            border-radius: 25px;
+            font-weight: bold;
+            transition: 0.3s;
+            cursor: pointer;
+        }
+        
+        .btn-sair:hover {
+            background: #fff;
+            color: #000;
+        }
+        
+        .chat-area {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+        
+        .welcome-section {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 40px;
+        }
+        
+        .senai-logo {
+            font-size: 72px;
+            font-weight: 900;
+            margin-bottom: 30px;
+            letter-spacing: 2px;
+        }
+        
+        .quick-actions {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-bottom: 40px;
+            flex-wrap: wrap;
+        }
+        
+        .quick-btn {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #fff;
+            padding: 12px 24px;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: 0.3s;
+            font-size: 14px;
+        }
+        
+        .quick-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+        
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 24px 0;
+            display: none;
+            flex-direction: column;
+            max-width: 800px;
+            margin: 0 auto;
+            width: 100%;
+        }
+        
+        .chat-messages::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        .chat-messages::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        
+        .chat-messages::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 3px;
+        }
+        
+        .message {
+            margin-bottom: 32px;
+            animation: fadeInUp 0.3s ease;
+            padding: 0 24px;
+        }
+        
+        .message-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 8px;
+        }
+        
+        .message-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 14px;
+            flex-shrink: 0;
+        }
+        
+        .message.user .message-avatar {
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            color: white;
+        }
+        
+        .message.ai .message-avatar {
+            background: linear-gradient(135deg, #ff6b6b 0%, #feca57 100%);
+            color: white;
+        }
+        
+        .message-author {
+            font-weight: 600;
+            font-size: 14px;
+            color: #fff;
+        }
+        
+        .message-time {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.5);
+            margin-left: auto;
+        }
+        
+        .message-content {
+            margin-left: 44px;
+            line-height: 1.6;
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 15px;
+        }
+        
+        .message.user .message-content {
+            color: rgba(255, 255, 255, 0.95);
+        }
+        
+        .message.ai .message-content {
+            color: rgba(255, 255, 255, 0.85);
+        }
+        
+        .input-container {
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(15px);
+            border-radius: 12px;
+            padding: 16px 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            margin: 24px auto;
+            max-width: 800px;
+            width: calc(100% - 48px);
+        }
+        
+        .chat-input {
+            flex: 1;
+            background: transparent;
+            border: none;
+            color: #fff;
+            font-size: 15px;
+            outline: none;
+            resize: none;
+            max-height: 120px;
+            min-height: 20px;
+            line-height: 1.5;
+        }
+        
+        .chat-input::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+        }
+        
+        .send-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            color: #fff;
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 6px;
+            transition: 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0.6;
+        }
+        
+        .send-btn:hover {
+            background: rgba(255, 255, 255, 0.15);
+            opacity: 1;
+        }
+        
+        .send-btn.active {
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            opacity: 1;
+        }
+        
+        .mic-btn {
+            background: transparent;
+            border: none;
+            color: rgba(255, 255, 255, 0.6);
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 6px;
+            transition: 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .mic-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: rgba(255, 255, 255, 0.8);
+        }
+        
+        .typing-indicator {
+            display: none;
+            padding: 0 24px 16px 68px;
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 14px;
+            font-style: italic;
+            max-width: 800px;
+            margin: 0 auto;
+            width: 100%;
+        }
+        
+        .typing-dots {
+            display: inline-block;
+            animation: blink 1.4s infinite;
+        }
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @keyframes blink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0.3; }
+        }
+        
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 250px;
+            }
+            
+            .main-header {
+                padding: 15px 20px;
+            }
+            
+            .chat-messages {
+                padding: 10px 20px;
+            }
+            
+            .input-container {
+                margin: 10px 20px;
+            }
+            
+            .senai-logo {
+                font-size: 48px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="particles-js"></div>
+    
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <div class="logo">SENAI AI</div>
+            <button class="new-chat-btn" onclick="newChat()">+ Novo</button>
+        </div>
+        
+        <div class="sidebar-content" id="chatList">
+            <!-- Chats serão adicionados dinamicamente aqui -->
+        </div>
+        
+        <div class="sidebar-footer">
+            <div class="user-info">
+                <div class="user-avatar">U</div>
+                <div class="user-details">
+                    <h4>Usuário SENAI</h4>
+                    <span>usuario@senai.br</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="main-content">
+        <div class="main-header">
+            <div class="chat-title-main" id="chatTitleMain">SENAI AI Chatbot</div>
+            <div class="header-actions">
+                <button class="btn-sair" onclick="logout()">SAIR</button>
+            </div>
+        </div>
+        
+        <div class="chat-area">
+            <div class="welcome-section" id="welcomeSection">
+                <div class="senai-logo">SENAI</div>
+                
+                <div class="quick-actions">
+                    <button class="quick-btn" onclick="sendQuickMessage('Como posso consultar o calendário acadêmico?')">CALENDÁRIO</button>
+                    <button class="quick-btn" onclick="sendQuickMessage('Como reservo uma sala ou laboratório?')">SALAS</button>
+                    <button class="quick-btn" onclick="sendQuickMessage('Onde encontro o cronograma de aulas?')">CRONOGRAMA</button>
+                </div>
+            </div>
+            
+            <div class="chat-messages" id="chatMessages">
+                <!-- Mensagens serão adicionadas dinamicamente aqui -->
+            </div>
+            
+            <div class="typing-indicator" id="typingIndicator">
+                SENAI AI está digitando<span class="typing-dots">...</span>
+            </div>
+            
+            <div class="input-container">
+                <button class="mic-btn" onclick="toggleMic()">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"/>
+                        <path d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/>
+                    </svg>
+                </button>
+                <textarea class="chat-input" id="messageInput" placeholder="Digite sua mensagem..." onkeypress="handleKeyPress(event)" oninput="updateSendButton()" rows="1"></textarea>
+                <button class="send-btn" onclick="sendMessage()">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Estado global do chat
+        let chatState = {
+            chats: [],
+            currentChatId: null,
+            chatCounter: 0,
+            isTyping: false
+        };
+
+        // Respostas automáticas do AI
+        const aiResponses = {
+            'calendário': 'Você pode consultar o calendário acadêmico através do portal do aluno ou solicitando na secretaria. O calendário contém datas importantes como início e fim dos períodos letivos, feriados e eventos especiais.',
+            'salas': 'Para reservar salas ou laboratórios, acesse o sistema de reservas online ou procure a coordenação do seu curso. É necessário especificar o horário, data e finalidade da reserva.',
+            'cronograma': 'O cronograma de aulas está disponível no sistema acadêmico. Você pode acessá-lo através do seu login de estudante ou consultar os quadros de horários nos corredores.',
+            'material': 'Os materiais de estudo estão disponíveis na biblioteca digital e no ambiente virtual de aprendizagem. Procure por sua disciplina específica ou consulte seu professor.',
+            'suporte': 'Para suporte técnico, entre em contato com a TI através do email suporte@senai.br ou pelos ramais internos 2020-2025.',
+            'default': 'Entendi sua pergunta! Como assistente virtual do SENAI, posso ajudá-lo com informações sobre calendário acadêmico, reserva de salas, cronogramas, materiais de estudo e suporte técnico. Tem algo específico que gostaria de saber?'
+        };
+
+        // Inicialização
+        document.addEventListener('DOMContentLoaded', function() {
+            createParticles();
+            loadSampleChats();
+            updateChatList();
+        });
+
+        // Partículas de fundo
+        function createParticles() {
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            const particles = [];
+            canvas.style.position = 'fixed';
+            canvas.style.top = 0;
+            canvas.style.left = 0;
+            canvas.style.width = '100%';
+            canvas.style.height = '100%';
+            canvas.style.zIndex = '-1';
+            document.getElementById('particles-js').appendChild(canvas);
+            
+            function resize() {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+            }
+            
+            function createParticle() {
+                return {
+                    x: Math.random() * canvas.width,
+                    y: Math.random() * canvas.height,
+                    size: Math.random() * 2 + 0.5,
+                    speedX: (Math.random() - 0.5) * 0.5,
+                    speedY: (Math.random() - 0.5) * 0.5,
+                    opacity: Math.random() * 0.3 + 0.1
+                };
+            }
+            
+            function animate() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                particles.forEach(p => {
+                    p.x += p.speedX;
+                    p.y += p.speedY;
+                    if (p.x < 0 || p.x > canvas.width) p.speedX *= -1;
+                    if (p.y < 0 || p.y > canvas.height) p.speedY *= -1;
+                    ctx.beginPath();
+                    ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+                    ctx.fillStyle = `rgba(255,255,255,${p.opacity})`;
+                    ctx.fill();
+                });
+                requestAnimationFrame(animate);
+            }
+            
+            resize();
+            window.addEventListener('resize', resize);
+            for (let i = 0; i < 80; i++) particles.push(createParticle());
+            animate();
+        }
+
+        // Carrega chats de exemplo
+        function loadSampleChats() {
+            chatState.chats = [
+                {
+                    id: 1,
+                    title: "Dúvidas sobre Calendário",
+                    messages: [
+                        {
+                            text: "Quando começa o próximo semestre?",
+                            sender: "user",
+                            timestamp: new Date(Date.now() - 86400000)
+                        },
+                        {
+                            text: "O próximo semestre letivo inicia no dia 15 de agosto, conforme calendário acadêmico disponível no portal.",
+                            sender: "ai",
+                            timestamp: new Date(Date.now() - 86350000)
+                        }
+                    ],
+                    createdAt: new Date(Date.now() - 86400000),
+                    lastMessage: "O próximo semestre letivo inicia no dia 15 de agosto..."
+                },
+                {
+                    id: 2,
+                    title: "Reserva de Laboratório",
+                    messages: [
+                        {
+                            text: "Como faço para reservar o laboratório de informática?",
+                            sender: "user",
+                            timestamp: new Date(Date.now() - 3600000)
+                        },
+                        {
+                            text: "Você pode reservar o laboratório através do sistema online ou na secretaria do curso. Precisa de ajuda com o acesso ao sistema?",
+                            sender: "ai",
+                            timestamp: new Date(Date.now() - 3500000)
+                        }
+                    ],
+                    createdAt: new Date(Date.now() - 3600000),
+                    lastMessage: "Você pode reservar o laboratório através..."
+                }
+            ];
+            chatState.chatCounter = 2;
+        }
+
+        // Função para gerar resposta automática
+        function generateAIResponse(message) {
+            const lowerMessage = message.toLowerCase();
+            
+            if (lowerMessage.includes('calendário') || lowerMessage.includes('calendario')) {
+                return aiResponses.calendário;
+            } else if (lowerMessage.includes('sala') || lowerMessage.includes('laboratório') || lowerMessage.includes('laboratorio') || lowerMessage.includes('reserva')) {
+                return aiResponses.salas;
+            } else if (lowerMessage.includes('cronograma') || lowerMessage.includes('aula') || lowerMessage.includes('horário') || lowerMessage.includes('horario')) {
+                return aiResponses.cronograma;
+            } else if (lowerMessage.includes('material') || lowerMessage.includes('estudo') || lowerMessage.includes('bibliografia')) {
+                return aiResponses.material;
+            } else if (lowerMessage.includes('suporte') || lowerMessage.includes('técnico') || lowerMessage.includes('tecnico') || lowerMessage.includes('problema')) {
+                return aiResponses.suporte;
+            } else {
+                return aiResponses.default;
+            }
+        }
+
+        // Função para criar um novo chat
+        function newChat() {
+            const chatId = ++chatState.chatCounter;
+            const newChat = {
+                id: chatId,
+                title: `Nova Conversa ${chatId}`,
+                messages: [],
+                createdAt: new Date(),
+                lastMessage: ''
+            };
+            
+            chatState.chats.unshift(newChat);
+            chatState.currentChatId = chatId;
+            
+            updateChatList();
+            showChatInterface();
+            document.getElementById('chatTitleMain').textContent = newChat.title;
+            document.getElementById('messageInput').focus();
+        }
+
+        // Função para selecionar um chat
+        function selectChat(chatId) {
+            chatState.currentChatId = chatId;
+            updateChatList();
+            showChatInterface();
+            loadChatMessages();
+            
+            const chat = chatState.chats.find(c => c.id === chatId);
+            if (chat) {
+                document.getElementById('chatTitleMain').textContent = chat.title;
+            }
+        }
+
+        // Função para atualizar a lista de chats na sidebar
+        function updateChatList() {
+            const chatList = document.getElementById('chatList');
+            chatList.innerHTML = '';
+
+            chatState.chats.forEach(chat => {
+                const chatItem = document.createElement('div');
+                chatItem.className = `chat-item ${chat.id === chatState.currentChatId ? 'active' : ''}`;
+                chatItem.onclick = () => selectChat(chat.id);
+                
+                const timeAgo = getTimeAgo(chat.createdAt);
+                const preview = chat.lastMessage || 'Conversa iniciada';
+                
+                chatItem.innerHTML = `
+                    <div class="chat-title">${chat.title}</div>
+                    <div class="chat-preview">${preview}</div>
+                    <div class="chat-time">${timeAgo}</div>
+                `;
+                
+                chatList.appendChild(chatItem);
+            });
+        }
+
+        // Função para mostrar interface de chat
+        function showChatInterface() {
+            document.getElementById('welcomeSection').style.display = 'none';
+            document.getElementById('chatMessages').style.display = 'flex';
+        }
+
+        // Função para mostrar interface de boas-vindas
+        function showWelcomeInterface() {
+            document.getElementById('welcomeSection').style.display = 'flex';
+            document.getElementById('chatMessages').style.display = 'none';
+            document.getElementById('chatTitleMain').textContent = 'SENAI AI Chatbot';
+            chatState.currentChatId = null;
+        }
+
+        // Função para carregar mensagens do chat atual
+        function loadChatMessages() {
+            const messagesContainer = document.getElementById('chatMessages');
+            messagesContainer.innerHTML = '';
+
+            const currentChat = chatState.chats.find(c => c.id === chatState.currentChatId);
+            if (currentChat && currentChat.messages) {
+                currentChat.messages.forEach(message => {
+                    addMessageToDOM(message.text, message.sender, message.timestamp, false);
+                });
+                messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            }
+        }
+
+        // Função para adicionar mensagem ao DOM
+        function addMessageToDOM(text, sender, timestamp, animate = true) {
+            const messagesContainer = document.getElementById('chatMessages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${sender}`;
+            
+            if (animate) {
+                messageDiv.style.animation = 'fadeInUp 0.3s ease';
+            }
+            
+            const timeStr = timestamp ? new Date(timestamp).toLocaleTimeString('pt-BR', {hour: '2-digit', minute: '2-digit'}) : new Date().toLocaleTimeString('pt-BR', {hour: '2-digit', minute: '2-digit'});
+            
+            const authorName = sender === 'user' ? 'Você' : 'SENAI AI';
+            const avatar = sender === 'user' ? 'U' : 'AI';
+            
+            messageDiv.innerHTML = `
+                <div class="message-header">
+                    <div class="message-avatar">${avatar}</div>
+                    <div class="message-author">${authorName}</div>
+                    <div class="message-time">${timeStr}</div>
+                </div>
+                <div class="message-content">${text}</div>
+            `;
+            
+            messagesContainer.appendChild(messageDiv);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            
+            // Atualizar estado do botão enviar
+            updateSendButton();
+        }
+
+        // Função para enviar mensagem
+        function sendMessage() {
+            const input = document.getElementById('messageInput');
+            const message = input.value.trim();
+            
+            if (message) {
+                // Se não há chat ativo, criar um novo
+                if (!chatState.currentChatId) {
+                    newChat();
+                    // Atualizar título do chat com base na primeira mensagem
+                    const currentChat = chatState.chats.find(c => c.id === chatState.currentChatId);
+                    if (currentChat) {
+                        currentChat.title = message.length > 30 ? message.substring(0, 30) + '...' : message;
+                        document.getElementById('chatTitleMain').textContent = currentChat.title;
+                    }
+                }
+                
+                const timestamp = new Date();
+                
+                // Adicionar mensagem do usuário
+                addMessageToDOM(message, 'user', timestamp);
+                
+                // Salvar mensagem no estado
+                const currentChat = chatState.chats.find(c => c.id === chatState.currentChatId);
+                if (currentChat) {
+                    currentChat.messages.push({
+                        text: message,
+                        sender: 'user',
+                        timestamp: timestamp
+                    });
+                    currentChat.lastMessage = message.length > 50 ? message.substring(0, 50) + '...' : message;
+                }
+                
+                // Limpar input
+                input.value = '';
+                updateSendButton();
+                
+                // Mostrar indicador de digitação
+                showTypingIndicator();
+                
+                // Simular resposta do AI após um delay
+                setTimeout(() => {
+                    hideTypingIndicator();
+                    const aiResponse = generateAIResponse(message);
+                    const responseTimestamp = new Date();
+                    
+                    // Adicionar resposta do AI
+                    addMessageToDOM(aiResponse, 'ai', responseTimestamp);
+                    
+                    // Salvar resposta no estado
+                    if (currentChat) {
+                        currentChat.messages.push({
+                            text: aiResponse,
+                            sender: 'ai',
+                            timestamp: responseTimestamp
+                        });
+                        currentChat.lastMessage = aiResponse.length > 50 ? aiResponse.substring(0, 50) + '...' : aiResponse;
+                    }
+                    
+                    // Atualizar lista de chats
+                    updateChatList();
+                }, 1500 + Math.random() * 2000);
+            }
+        }
+
+        // Função para enviar mensagem rápida
+        function sendQuickMessage(message) {
+            if (!chatState.currentChatId) {
+                newChat();
+            }
+            
+            document.getElementById('messageInput').value = message;
+            sendMessage();
+        }
+
+        // Mostrar indicador de digitação
+        function showTypingIndicator() {
+            chatState.isTyping = true;
+            document.getElementById('typingIndicator').style.display = 'block';
+            const chatMessages = document.getElementById('chatMessages');
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        // Esconder indicador de digitação
+        function hideTypingIndicator() {
+            chatState.isTyping = false;
+            document.getElementById('typingIndicator').style.display = 'none';
+        }
+
+        // Atualizar estado do botão enviar
+        function updateSendButton() {
+            const input = document.getElementById('messageInput');
+            const sendBtn = document.querySelector('.send-btn');
+            
+            if (input.value.trim() !== '') {
+                sendBtn.classList.add('active');
+            } else {
+                sendBtn.classList.remove('active');
+            }
+            
+            // Ajustar altura do textarea
+            input.style.height = 'auto';
+            input.style.height = (input.scrollHeight) + 'px';
+        }
+
+        // Manipulador de tecla pressionada
+        function handleKeyPress(e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendMessage();
+            }
+        }
+
+        // Alternar microfone
+        function toggleMic() {
+            alert('Funcionalidade de microfone será implementada em versões futuras!');
+        }
+
+        // Logout
+        function logout() {
+            if (confirm('Deseja realmente sair do sistema?')) {
+                alert('Saindo do sistema...');
+                // Redirecionar para a página de login
+                window.location.href = "login.html";
+            }
+        }
+
+        // Formatar tempo relativo
+        function getTimeAgo(date) {
+            const now = new Date();
+            const diff = now - date;
+            
+            const seconds = Math.floor(diff / 1000);
+            const minutes = Math.floor(seconds / 60);
+            const hours = Math.floor(minutes / 60);
+            const days = Math.floor(hours / 24);
+            
+            if (days > 0) return `${days}d atrás`;
+            if (hours > 0) return `${hours}h atrás`;
+            if (minutes > 0) return `${minutes}min atrás`;
+            return 'Agora';
+        }
+    </script>
+</body>
+</html>
